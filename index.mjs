@@ -1,6 +1,5 @@
 import express from "express";
 import xmlparser from 'express-xml-bodyparser';
-import bodyParser from "body-parser";
 
 const port = 8080;
 
@@ -17,7 +16,8 @@ let data = "";
 
 router.post("/", async function createUser(req, res) {
     try {
-        return res.status(201).json({ data: req.body });
+        data=req.body
+        return res.status(201).json( req.body );
     }
     catch (err) {
         return res.status(500).json(err)
@@ -26,7 +26,7 @@ router.post("/", async function createUser(req, res) {
 
 router.get("/", async function getUser(req, res) {
     try {
-        return res.status(201).json({ data: data });
+        return res.status(201).json(data);
     }
     catch (err) {
         return res.status(500).json(err)
