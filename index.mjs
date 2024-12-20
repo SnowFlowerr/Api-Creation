@@ -1,65 +1,38 @@
 import express from "express";
-import mongoose from "mongoose";
-import dotenv from "dotenv";
-import cors from "cors";
-
-dotenv.config();
+import xmlparser from 'express-xml-bodyparser';
+import bodyParser from "body-parser";
 
 const port = 8080;
-const url = process.env.MongoDB
 
 const app = express();
 app.use(express.json());
-app.use(cors());
+app.use(express.text());
+app.use(xmlparser());
 
-const router=express.Router();
+const router = express.Router();
 
-function mongooseConnect() {
-    mongoose.connect(url)
-        .then(() => console.log("MongoDB is Connected"))
-        .catch((err) => console.log(err))
-}
+app.use('/', router);
 
-const userSchema = mongoose.Schema({
-    name: {
-        type: String,
-        require: true
-    },
-    email: {
-        type: String,
-        trim: true
-    },
-    password: {
-        type: String,
-    },
-}, { timeStamp: true })
-
-const User = mongoose.model("user", userSchema);
-
-app.use('/',router);
+let data = "";
 
 router.post("/", async function createUser(req, res) {
     try {
-        const data = req.body;
-        const createdUser = await User.create(data);
-        return res.status(201).send(createdUser);
+        return res.status(201).json({ data: req.body });
     }
     catch (err) {
-        return res.status(500).send(err)
+        return res.status(500).json(err)
     }
 })
 
 router.get("/", async function getUser(req, res) {
     try {
-        const getUser = await User.find();
-        return res.status(201).send(getUser);
+        return res.status(201).json({ data: data });
     }
     catch (err) {
-        return res.status(500).send(err)
+        return res.status(500).json(err)
     }
 })
 
 app.listen(port, () => {
-    mongooseConnect();
     console.log("Server on port", port)
 })
